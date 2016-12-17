@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 use std::ops::*;
-use integer_as_type::IntegerAsType;
+use integer_as_type::*;
 use std::clone::Clone;
 use std::fmt;
 
@@ -136,3 +136,7 @@ impl<P> Div for Fp<P> where P: IntegerAsType {
         self
     }
 }
+
+pub type F2 = Fp<T2>;
+pub type F3 = Fp<T3>;
+pub type F5 = Fp<T5>;

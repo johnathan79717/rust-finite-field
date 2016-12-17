@@ -1,10 +1,9 @@
 extern crate finite_field;
-use finite_field::field::base::Fp;
-use finite_field::integer_as_type::{T5,T3};
+use finite_field::field::base::*;
 
-fn zero() -> Fp<T3> { Fp::<T3>::new(0) }
-fn one() -> Fp<T3> { Fp::<T3>::new(1) }
-fn two() -> Fp<T3> { Fp::<T3>::new(2) }
+fn zero() -> F3 { F3::new(0) }
+fn one() -> F3 { F3::new(1) }
+fn two() -> F3 { F3::new(2) }
 
 #[test]
 fn operators() {
@@ -29,7 +28,7 @@ fn operators() {
 
 #[test]
 fn division() {
-    fn f(i: i64) -> Fp<T5> { Fp::<T5>::new(i) }
+    fn f(i: i64) -> F5 { F5::new(i) }
     for a in 1..5 {
         for b in 1..5 {
             let c = a * b % 5;
