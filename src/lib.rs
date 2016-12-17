@@ -1,5 +1,5 @@
 use std::marker::PhantomData;
-use std::ops::{Add};
+use std::ops::{Add, Sub};
 
 pub trait IntegerAsType {
     fn value() -> i64;
@@ -12,7 +12,10 @@ pub struct Fp<P> {
 }
 
 impl<P: IntegerAsType> Fp<P> {
-    fn new(rep: i64) -> Fp<P> {
+    fn new(mut rep: i64) -> Fp<P> {
+        let p = P::value();
+        rep %= p;
+        if rep < 0 { rep += p; }
         Fp::<P> {
             rep: rep % P::value(),
             phantom: PhantomData,
@@ -22,11 +25,17 @@ impl<P: IntegerAsType> Fp<P> {
 
 impl<P: IntegerAsType> Add for Fp<P> {
     type Output = Fp<P>;
-    fn add(self, other: Fp<P>) -> Fp<P> {
+    fn add(self, other: Self) -> Self::Output {
         Fp::<P>::new(self.rep + other.rep)
     }
 }
 
+impl<P: IntegerAsType> Sub for Fp<P> {
+    type Output = Fp<P>;
+    fn sub(self, other: Self) -> Self::Output {
+        Fp::<P>::new(self.rep - other.rep)
+    }
+}
 
 #[derive(Debug, PartialEq)]
 pub struct T2;
@@ -51,6 +60,6 @@ mod tests {
     #[test]
     fn operators() {
         assert_eq!(zero(), one() + two());
-        //assert_eq!(zero() - one(), two());
+        assert_eq!(zero() - one(), two());
     }
 }
