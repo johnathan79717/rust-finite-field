@@ -1,8 +1,9 @@
 use std::marker::PhantomData;
 use std::ops::*;
 use integer_as_type::IntegerAsType;
+use std::clone::Clone;
+use std::fmt;
 
-#[derive(Debug, PartialEq)]
 pub struct Fp<P> {
     rep: i64,
     phantom: PhantomData<P>,
@@ -17,6 +18,22 @@ impl<P> Fp<P> where P: IntegerAsType {
             rep: rep % P::value(),
             phantom: PhantomData,
         }
+    }
+}
+
+impl<P> Clone for Fp<P> where P: IntegerAsType {
+    fn clone(&self) -> Self { Fp::<P>::new(self.rep) }
+}
+
+impl<P> PartialEq for Fp<P> {
+    fn eq(&self, rhs: &Self) -> bool {
+        self.rep == rhs.rep
+    }
+}
+
+impl<P> fmt::Debug for Fp<P> where P: IntegerAsType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Fp<{}>({})", P::value(), self.rep)
     }
 }
 
@@ -80,3 +97,25 @@ impl<P> Neg for Fp<P> where P: IntegerAsType {
     }
 }
 
+impl<P> BitXorAssign<i64> for Fp<P> where P: IntegerAsType {
+    fn bitxor_assign(&mut self, pow: i64) {
+        if pow == 0 {
+            *self = Fp::<P>::new(1);
+        } else if pow % 2 == 1 {
+            // XXX Not sure if clone() is necessary
+            *self *= self.clone() ^ (pow - 1);
+        } else {
+            // XXX Not sure if clone() is necessary
+            *self *= self.clone();
+            *self ^= pow / 2;
+        }
+    }
+}
+
+impl<P> BitXor<i64> for Fp<P> where P: IntegerAsType {
+    type Output = Self;
+    fn bitxor(mut self, pow: i64) -> Self {
+        self ^= pow;
+        self
+    }
+}

@@ -12,6 +12,7 @@ fn operators() {
     assert_eq!(zero() - one(), two());
     assert_eq!(two() * two(), one());
     assert_eq!(-one(), two());
+    assert_eq!(two() ^ 2, one());
 
     let mut a = one();
     a += two();
@@ -20,4 +21,9 @@ fn operators() {
     assert_eq!(a, two());
     a *= two();
     assert_eq!(a, one());
+    a = two();
+    a ^= 2;
+    assert_eq!(a, one());
+
+    println!("a = {:?}", a);
 }
