@@ -1,5 +1,5 @@
 use std::marker::PhantomData;
-use std::ops::{Add, Sub, AddAssign, SubAssign};
+use std::ops::*;
 
 pub trait IntegerAsType {
     fn value() -> i64;
@@ -12,7 +12,7 @@ pub struct Fp<P> {
 }
 
 impl<P: IntegerAsType> Fp<P> {
-    fn new(mut rep: i64) -> Fp<P> {
+    pub fn new(mut rep: i64) -> Fp<P> {
         let p = P::value();
         rep %= p;
         if rep < 0 { rep += p; }
@@ -34,8 +34,8 @@ impl<P: IntegerAsType> AddAssign for Fp<P> {
 }
 
 impl<P: IntegerAsType> Add for Fp<P> {
-    type Output = Fp<P>;
-    fn add(mut self, rhs: Self) -> Self::Output {
+    type Output = Self;
+    fn add(mut self, rhs: Self) -> Self {
         self += rhs;
         self
     }
@@ -51,12 +51,43 @@ impl<P: IntegerAsType> SubAssign for Fp<P> {
 }
 
 impl<P: IntegerAsType> Sub for Fp<P> {
-    type Output = Fp<P>;
-    fn sub(mut self, rhs: Self) -> Self::Output {
+    type Output = Self;
+    fn sub(mut self, rhs: Self) -> Self {
         self -= rhs;
         self
     }
 }
+
+impl<P: IntegerAsType> MulAssign for Fp<P> {
+    fn mul_assign(&mut self, rhs: Self) {
+        self.rep *= rhs.rep;
+        self.rep %= P::value();
+    }
+}
+
+impl<P: IntegerAsType> Mul for Fp<P> {
+    type Output = Self;
+    fn mul(mut self, rhs: Self) -> Self {
+        self *= rhs;
+        self
+    }
+}
+
+impl<P: IntegerAsType> Neg for Fp<P> {
+    type Output = Self;
+    fn neg(mut self) -> Self {
+        if self.rep != 0 {
+            self.rep = P::value() - self.rep;
+        }
+        self
+    }
+}
+
+//impl<P: IntegerAsType> DivAssign for Fp<P> {
+    //fn div_assign(&mut self, rhs: Self) {
+
+    //}
+//}
 
 #[derive(Debug, PartialEq)]
 pub struct T2;
@@ -72,21 +103,7 @@ impl IntegerAsType for T3 {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
-    fn zero() -> Fp<T3> { Fp::<T3>::new(0) }
-    fn one() -> Fp<T3> { Fp::<T3>::new(1) }
-    fn two() -> Fp<T3> { Fp::<T3>::new(2) }
-
     #[test]
-    fn operators() {
-        assert_eq!(zero(), one() + two());
-        assert_eq!(zero() - one(), two());
-
-        let mut a = one();
-        a += two();
-        assert_eq!(a, zero());
-        a -= one();
-        assert_eq!(a, two());
+    fn it_works() {
     }
 }
