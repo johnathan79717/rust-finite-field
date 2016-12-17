@@ -119,3 +119,20 @@ impl<P> BitXor<i64> for Fp<P> where P: IntegerAsType {
         self
     }
 }
+
+impl<P> DivAssign for Fp<P> where P: IntegerAsType {
+    fn div_assign(&mut self, rhs: Self) {
+        if rhs.rep == 0 {
+            panic!("Fp dividing zero");
+        }
+        *self *= rhs ^ (P::value() - 2);
+    }
+}
+
+impl<P> Div for Fp<P> where P: IntegerAsType {
+    type Output = Self;
+    fn div(mut self, rhs: Self) -> Self {
+        self /= rhs;
+        self
+    }
+}
