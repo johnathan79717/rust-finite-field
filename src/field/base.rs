@@ -8,7 +8,7 @@ pub struct Fp<P> {
     phantom: PhantomData<P>,
 }
 
-impl<P: IntegerAsType> Fp<P> {
+impl<P> Fp<P> where P: IntegerAsType {
     pub fn new(mut rep: i64) -> Fp<P> {
         let p = P::value();
         rep %= p;
@@ -20,7 +20,7 @@ impl<P: IntegerAsType> Fp<P> {
     }
 }
 
-impl<P: IntegerAsType> AddAssign for Fp<P> {
+impl<P> AddAssign for Fp<P> where P: IntegerAsType {
     fn add_assign(&mut self, rhs: Self) {
         self.rep += rhs.rep;
         let p = P::value();
@@ -30,7 +30,7 @@ impl<P: IntegerAsType> AddAssign for Fp<P> {
     }
 }
 
-impl<P: IntegerAsType> Add for Fp<P> {
+impl<P> Add for Fp<P> where P: IntegerAsType {
     type Output = Self;
     fn add(mut self, rhs: Self) -> Self {
         self += rhs;
@@ -38,7 +38,7 @@ impl<P: IntegerAsType> Add for Fp<P> {
     }
 }
 
-impl<P: IntegerAsType> SubAssign for Fp<P> {
+impl<P> SubAssign for Fp<P> where P: IntegerAsType {
     fn sub_assign(&mut self, rhs: Self) {
         self.rep -= rhs.rep;
         if self.rep < 0 {
@@ -47,7 +47,7 @@ impl<P: IntegerAsType> SubAssign for Fp<P> {
     }
 }
 
-impl<P: IntegerAsType> Sub for Fp<P> {
+impl<P> Sub for Fp<P> where P: IntegerAsType {
     type Output = Self;
     fn sub(mut self, rhs: Self) -> Self {
         self -= rhs;
@@ -55,14 +55,14 @@ impl<P: IntegerAsType> Sub for Fp<P> {
     }
 }
 
-impl<P: IntegerAsType> MulAssign for Fp<P> {
+impl<P> MulAssign for Fp<P> where P: IntegerAsType {
     fn mul_assign(&mut self, rhs: Self) {
         self.rep *= rhs.rep;
         self.rep %= P::value();
     }
 }
 
-impl<P: IntegerAsType> Mul for Fp<P> {
+impl<P> Mul for Fp<P> where P: IntegerAsType {
     type Output = Self;
     fn mul(mut self, rhs: Self) -> Self {
         self *= rhs;
@@ -70,7 +70,7 @@ impl<P: IntegerAsType> Mul for Fp<P> {
     }
 }
 
-impl<P: IntegerAsType> Neg for Fp<P> {
+impl<P> Neg for Fp<P> where P: IntegerAsType {
     type Output = Self;
     fn neg(mut self) -> Self {
         if self.rep != 0 {
@@ -79,10 +79,4 @@ impl<P: IntegerAsType> Neg for Fp<P> {
         self
     }
 }
-
-//impl<P: IntegerAsType> DivAssign for Fp<P> {
-    //fn div_assign(&mut self, rhs: Self) {
-
-    //}
-//}
 
