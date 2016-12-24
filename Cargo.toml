@@ -1,5 +1,5 @@
 [package]
-name = "finite_field"
+name = "finite-field"
 version = "0.1.0"
 authors = ["Jonathan Hao <jhao@mozilla.com>"]
 
