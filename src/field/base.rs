@@ -4,50 +4,50 @@ use integer_as_type::*;
 use std::clone::Clone;
 use std::fmt;
 
-pub struct Fp<P> {
+pub struct Fp<N> {
     rep: i64,
-    phantom: PhantomData<P>,
+    phantom: PhantomData<N>,
 }
 
-impl<P> Fp<P> where P: IntegerAsType {
-    pub fn new(mut rep: i64) -> Fp<P> {
-        let p = P::value();
+impl<N> Fp<N> where N: IntegerAsType {
+    pub fn new(mut rep: i64) -> Fp<N> {
+        let p = N::value();
         rep %= p;
         if rep < 0 { rep += p; }
-        Fp::<P> {
-            rep: rep % P::value(),
+        Fp::<N> {
+            rep: rep % N::value(),
             phantom: PhantomData,
         }
     }
 }
 
-impl<P> Clone for Fp<P> where P: IntegerAsType {
-    fn clone(&self) -> Self { Fp::<P>::new(self.rep) }
+impl<N> Clone for Fp<N> where N: IntegerAsType {
+    fn clone(&self) -> Self { Fp::<N>::new(self.rep) }
 }
 
-impl<P> PartialEq for Fp<P> {
+impl<N> PartialEq for Fp<N> {
     fn eq(&self, rhs: &Self) -> bool {
         self.rep == rhs.rep
     }
 }
 
-impl<P> fmt::Debug for Fp<P> where P: IntegerAsType {
+impl<N> fmt::Debug for Fp<N> where N: IntegerAsType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Fp<{}>({})", P::value(), self.rep)
+        write!(f, "Fp<{}>({})", N::value(), self.rep)
     }
 }
 
-impl<P> AddAssign for Fp<P> where P: IntegerAsType {
+impl<N> AddAssign for Fp<N> where N: IntegerAsType {
     fn add_assign(&mut self, rhs: Self) {
         self.rep += rhs.rep;
-        let p = P::value();
+        let p = N::value();
         if self.rep >= p {
             self.rep -= p;
         }
     }
 }
 
-impl<P> Add for Fp<P> where P: IntegerAsType {
+impl<N> Add for Fp<N> where N: IntegerAsType {
     type Output = Self;
     fn add(mut self, rhs: Self) -> Self {
         self += rhs;
@@ -55,16 +55,16 @@ impl<P> Add for Fp<P> where P: IntegerAsType {
     }
 }
 
-impl<P> SubAssign for Fp<P> where P: IntegerAsType {
+impl<N> SubAssign for Fp<N> where N: IntegerAsType {
     fn sub_assign(&mut self, rhs: Self) {
         self.rep -= rhs.rep;
         if self.rep < 0 {
-            self.rep += P::value();
+            self.rep += N::value();
         }
     }
 }
 
-impl<P> Sub for Fp<P> where P: IntegerAsType {
+impl<N> Sub for Fp<N> where N: IntegerAsType {
     type Output = Self;
     fn sub(mut self, rhs: Self) -> Self {
         self -= rhs;
@@ -72,14 +72,14 @@ impl<P> Sub for Fp<P> where P: IntegerAsType {
     }
 }
 
-impl<P> MulAssign for Fp<P> where P: IntegerAsType {
+impl<N> MulAssign for Fp<N> where N: IntegerAsType {
     fn mul_assign(&mut self, rhs: Self) {
         self.rep *= rhs.rep;
-        self.rep %= P::value();
+        self.rep %= N::value();
     }
 }
 
-impl<P> Mul for Fp<P> where P: IntegerAsType {
+impl<N> Mul for Fp<N> where N: IntegerAsType {
     type Output = Self;
     fn mul(mut self, rhs: Self) -> Self {
         self *= rhs;
@@ -87,20 +87,20 @@ impl<P> Mul for Fp<P> where P: IntegerAsType {
     }
 }
 
-impl<P> Neg for Fp<P> where P: IntegerAsType {
+impl<N> Neg for Fp<N> where N: IntegerAsType {
     type Output = Self;
     fn neg(mut self) -> Self {
         if self.rep != 0 {
-            self.rep = P::value() - self.rep;
+            self.rep = N::value() - self.rep;
         }
         self
     }
 }
 
-impl<P> BitXorAssign<i64> for Fp<P> where P: IntegerAsType {
+impl<N> BitXorAssign<i64> for Fp<N> where N: IntegerAsType {
     fn bitxor_assign(&mut self, pow: i64) {
         if pow == 0 {
-            *self = Fp::<P>::new(1);
+            *self = Fp::<N>::new(1);
         } else if pow % 2 == 1 {
             // XXX Not sure if clone() is necessary
             *self *= self.clone() ^ (pow - 1);
@@ -112,7 +112,7 @@ impl<P> BitXorAssign<i64> for Fp<P> where P: IntegerAsType {
     }
 }
 
-impl<P> BitXor<i64> for Fp<P> where P: IntegerAsType {
+impl<N> BitXor<i64> for Fp<N> where N: IntegerAsType {
     type Output = Self;
     fn bitxor(mut self, pow: i64) -> Self {
         self ^= pow;
@@ -120,16 +120,16 @@ impl<P> BitXor<i64> for Fp<P> where P: IntegerAsType {
     }
 }
 
-impl<P> DivAssign for Fp<P> where P: IntegerAsType {
+impl<N> DivAssign for Fp<N> where N: IntegerAsType {
     fn div_assign(&mut self, rhs: Self) {
         if rhs.rep == 0 {
             panic!("Fp dividing zero");
         }
-        *self *= rhs ^ (P::value() - 2);
+        *self *= rhs ^ (N::value() - 2);
     }
 }
 
-impl<P> Div for Fp<P> where P: IntegerAsType {
+impl<N> Div for Fp<N> where N: IntegerAsType {
     type Output = Self;
     fn div(mut self, rhs: Self) -> Self {
         self /= rhs;
